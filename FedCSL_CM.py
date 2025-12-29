@@ -25,7 +25,7 @@ def encrypt_vector(public_key, parameters):
     parameters = parameters.flatten(0).cpu().numpy().tolist()
     parameters = [public_key.encrypt(parameter) for parameter in parameters]
     return parameters
-# list解密
+
 def decrypt_vector(private_key, parameters):
     parameters = [private_key.decrypt(parameter) for parameter in parameters]
     return parameters
@@ -39,8 +39,6 @@ if __name__ == '__main__':
     args.local_ep = 5
     args.model = 'MLP'
     args.dataset = 'LC'
-    args.seed = 11
-    torch.manual_seed(11)
 
     if args.dataset == 'Taiwan':
         args.num_users = 10
@@ -50,7 +48,6 @@ if __name__ == '__main__':
         args.num_users = 20
         args.num_features = 10
         args.until = 6
-        args.local_bs = 1280
     elif args.dataset == 'HMEQ':
         args.num_users = 10
         args.num_features = 55
@@ -59,19 +56,15 @@ if __name__ == '__main__':
         args.num_users = 5
         args.num_features = 28
         args.until = 14
-        args.local_bs = 128
     elif args.dataset == 'A':
         args.num_users = 5
         args.num_features = 42
         args.until = 28
-        args.local_bs = 128
     elif args.dataset == 'LC':
         args.num_users = 15
         args.num_features = 34
         args.until = 18
-        args.local_bs = 512
-
-    # 每个参与者获取一个只有自己知道的私钥，对每个私钥后加密形成匿名的参与者池（除了自己以外无人知道哪个hash值对应哪个匿名参与者）
+     
     public_key, private_key = paillier.generate_paillier_keypair(n_length=128)
 
     # load dataset, split and sample users
@@ -128,18 +121,18 @@ if __name__ == '__main__':
                 net_local.load_state_dict(torch.load('./model_param/local_net_{}.pkl'.format(idx)))
                 net, loss,val_gmean, val_ba, val_f1score, val_recall = local.fedcsl_cm_train(local_net=copy.deepcopy(net_local).to(args.device),
                                            kd_net=copy.deepcopy(kd_net).to(args.device))
-            # 局部模型参数
+            
             local_parameters = copy.deepcopy(net.state_dict())
             encrypt_local_parameters = copy.deepcopy(net.state_dict())
             for key in encrypt_local_parameters:
                 encrypt_local_parameters[key] = encrypt_vector(public_key, encrypt_local_parameters[key])
             encrypt_w_local = encrypt_local_parameters
-            # # 保存局部模型参数
+           
             # w_locals.append(copy.deepcopy(net.state_dict()))
             torch.save(net.state_dict(), './model_param/local_net_{}.pkl'.format(idx))
-            # 保存这一轮参与聚合的局部模型的训练损失
+           
             loss_locals.append(copy.deepcopy(loss))
-            # 计算本轮局部模型的性能
+         
             performance_local = [val_gmean, val_ba, val_f1score, val_recall]
             # performance_local = [val_ba, val_f1score]
             All_performance.append(performance_local)
@@ -161,11 +154,10 @@ if __name__ == '__main__':
             Ns_i = round(Ns_i, 4)
             Ns.append(Ns_i)
 
-        # 保存局部模型的聚合权重
         local_weight = Cloud_evaluater.Assign_weight(Ps, Ns)
-        # 对局部模型参数加密并进行安全聚合
+     
         encrypt_w_glob, w_shape = FedSec_Cloud(w_locals, local_weight, public_key)
-        # 解密聚合后的模型参数
+     
         for key in encrypt_w_glob:
             encrypt_w_glob[key] = decrypt_vector(private_key, encrypt_w_glob[key])
             encrypt_w_glob[key] = torch.reshape(torch.Tensor(encrypt_w_glob[key]), w_shape[key])
@@ -175,11 +167,11 @@ if __name__ == '__main__':
         # copy weight to net_glob
         net_glob.load_state_dict(w_glob)
         kd_net = copy.deepcopy(net_glob)
-        # 保存每一轮所有客户端的平均运算时间
+      
         end_time = time.time()
         epoch_time = end_time - start_time
         avg_epoch_time.append(epoch_time)
-        # 保存这一轮全局模型的测试准确率
+      
         for idx in idxs_users:
             local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx])
             glob_test_gmean, glob_test_ba, glob_test_f1_score, glob_test_recall, profit, cost\
@@ -190,7 +182,7 @@ if __name__ == '__main__':
             ba_glob_val.append(glob_test_ba)
             f1_score_glob_val.append(glob_test_f1_score)
             recall_glob_val.append(glob_test_recall)
-        # print performance
+      
         glob_gmean_avg = sum(gmean_glob_val) / len(gmean_glob_val)
         glob_ba_avg = sum(ba_glob_val) / len(ba_glob_val)
         glob_f1_score_avg = sum(f1_score_glob_val) / len(f1_score_glob_val)
@@ -207,7 +199,6 @@ if __name__ == '__main__':
         fedavg_test_gmean.append(glob_gmean_avg)
         fedavg_test_recall.append(glob_recall_avg)
 
-
     avg_epoch_time = sum(avg_epoch_time) / len(avg_epoch_time)
     fedavg_train_loss = [round(i, 4) for i in fedavg_train_loss]
     fedavg_test_ba = [round(i, 4) for i in fedavg_test_ba]
@@ -218,4 +209,4 @@ if __name__ == '__main__':
     print('FedCSL-CM算法 Average Global AUC-PR: {:.4f}'.format(sum(fedavg_test_ba) / args.epochs))
     print('FedCSL-CM算法 Average Global BS+: {:.4f}'.format(sum(fedavg_test_f1_score) / args.epochs))
     print('FedCSL-CM算法 Average Global KS: {:.4f}'.format(sum(fedavg_test_recall) / args.epochs))
-    print('FedCSL-CM算法 Average Epoch Time: {:.4f}s'.format(avg_epoch_time))
+
