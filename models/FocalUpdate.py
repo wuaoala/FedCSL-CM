@@ -16,27 +16,13 @@ from imblearn.under_sampling import RandomUnderSampler
 
 def compute_profit(y_true, y_pred, threshold,
                    loan_amount=100000, interest_income=10000, LGD=0.45):
-    """
-    计算给定阈值下的平均利润
-    y_true: 实际标签 (0=违约, 1=不违约)
-    y_pred: 模型预测概率
-    """
-    y_hat = (y_pred >= threshold).type(torch.IntTensor)  # 1=不违约, 0=违约
+
+    y_hat = (y_pred >= threshold).type(torch.IntTensor)  
     tn, fp, fn, tp = metrics.confusion_matrix(y_true, y_hat).ravel()
-    # confusion = metrics.confusion_matrix(y_true, y_hat)
-    # fn = confusion[1][0]
-    # tn = confusion[0][0]
-    # tp = confusion[1][1]
-    # fp = confusion[0][1]
 
+    C_FP = interest_income 
+    C_FN = loan_amount * LGD  
 
-    C_FP = interest_income  # 错拒好客户的机会成本
-    C_FN = loan_amount * LGD  # 放贷坏客户的违约损失
-
-    # C_FN = interest_income  # 错拒好客户的机会成本
-    # C_FP = loan_amount * LGD  # 放贷坏客户的违约损失
-
-    # 成本
     total_cost = fp * C_FP + fn * C_FN
 
     profit_TN = interest_income
@@ -44,26 +30,19 @@ def compute_profit(y_true, y_pred, threshold,
     profit_FN = -loan_amount * LGD
     profit_TP = 0
 
-    # profit_TP = interest_income
-    # profit_FN = -interest_income
-    # profit_FP = -loan_amount * LGD
-    # profit_TN = 0
-
     total_profit = (tn * profit_TN +
                     fp * profit_FP +
                     fn * profit_FN +
                     tp * profit_TP)
 
-    avg_cost = total_cost / len(y_true)  # 平均成本
-    avg_profit = total_profit / len(y_true)  # 平均利润
+    avg_cost = total_cost / len(y_true)  
+    avg_profit = total_profit / len(y_true)  
 
     return avg_cost, avg_profit
 
 def compute_EMP(y_true, y_pred,
                 loan_amount=100000, interest_income=10000, LGD=0.45, num_thresholds=100):
-    """
-    计算 EMP (Expected Maximum Profit)
-    """
+    
     thresholds = np.linspace(0, 1, num_thresholds)
     cost, profit = compute_profit(y_true, y_pred, 0.5, loan_amount, interest_income, LGD)
     profits = [compute_profit(y_true, y_pred, t, loan_amount, interest_income, LGD)[1]
@@ -86,9 +65,8 @@ class FocalLoss(torch.nn.Module):
         self.reduction = reduction
 
     def forward(self, predict, target):
-        pt = F.softmax(predict, dim=-1)[:, 1]  # softmax获取概率 softmax激活函数 + CE损失函数
+        pt = F.softmax(predict, dim=-1)[:, 1]  
 
-        #在原始ce上增加动态权重因子
         loss = - self.alpha * (1 - pt) ** self.gamma * target * torch.log(pt) \
                - (1 - self.alpha) * pt ** self.gamma * (1 - target) * torch.log(1 - pt)
 
@@ -144,7 +122,7 @@ class LocalUpdate(object):
 
                 loss_focal = focalloss(log_probs, target)
                 loss = kd_alpha * loss_teacher + (1 - kd_alpha) * loss_focal
-                # 评估性能
+                
                 y_pred = F.softmax(log_probs, dim=1).argmax(dim=1).cpu()
                 y_prob = F.softmax(log_probs, dim=1)[:, 1].cpu()
                 y_prob, target = y_prob.to("cpu"), target.to("cpu")
@@ -164,10 +142,7 @@ class LocalUpdate(object):
                 optimizer.step()
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss) / len(batch_loss))
-        # val_gmean = np.mean(gmean)
-        # val_ba = np.mean(ba)
-        # val_f1_score = np.mean(f1_score)
-        # val_recall = np.mean(recall)
+      
         val_gmean = np.mean(AUC_ROC)
         val_ba = np.mean(AUC_PR)
         val_f1_score = np.mean(BS_Plus)
@@ -186,7 +161,7 @@ class LocalUpdate(object):
         for batch_idx, (data, target) in enumerate(self.ldr_test):
             data, target = data.to(self.args.device), target.to(self.args.device)
             log_probs = net(data)
-            # 评估性能
+         
 
             y_prob = F.softmax(log_probs, dim=1)[:, 1].cpu()
             y_prob, target = y_prob.to("cpu"), target.to("cpu")
@@ -209,6 +184,7 @@ class LocalUpdate(object):
         val_f1_score = np.mean(BS_Plus)
         val_recall = np.mean(BS_Minus)
         return val_gmean, val_ba, val_f1_score,  val_recall, profit, cost
+
 
 
 
