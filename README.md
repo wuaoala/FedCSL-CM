@@ -11,10 +11,13 @@ The code in this replication material generates the results of FedCSL-CM for the
 * `models/`: folder of key modules in FedCM-CSL
 * `utils/`: folder for data segmentation
 * `model_param/`: folder of saved model parameters
+* `save/`: folder saved significance test analysis figures
   
 Instructions & computational requirements
 -
 Running the `FedCSL-CM.py/` file will produce the results of the FedCSL-CM method.\<bar>
+
+Running the `Table_04 and Figure_02.py/` and `Table_06 and Figure_03.py/` files  ill produce the corresponding significance test analysis tables and figures.
 
 The programming language is Python (version 3.8). The versions of the other packages and libraries used can be found in the `requirements.txt/` file.
 
