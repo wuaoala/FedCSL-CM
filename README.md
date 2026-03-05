@@ -14,7 +14,7 @@ The code in this replication material generates the results of FedCSL-CM for the
   
 Instructions & computational requirements
 -
-Running the `FedCSL-CM.py/` file will produce the results of the FedCSL-CM method.<bar>
+Running the `FedCSL-CM.py/` file will produce the results of the FedCSL-CM method.\<bar>
 The programming language is Python (version 3.8). The versions of the other packages and libraries used can be found in the `requirements.txt/` file.
 
 Data availability and provenance
