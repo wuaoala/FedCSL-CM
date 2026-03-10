@@ -23,7 +23,7 @@ The programming language is Python (version 3.8). The versions of the other pack
 
 Computing environment
 -
-
+* The operating system is Windows 11.
 
 Data availability and provenance
 -
