@@ -21,6 +21,15 @@ Running the `Table_04 and Figure_02.py/` and `Table_06 and Figure_03.py/` files 
 
 The programming language is Python (version 3.8). The versions of the other packages and libraries used can be found in the `requirements.txt/` file.
 
+Computing environment
+-
+
+
 Data availability and provenance
 -
 The experimental datasets are located at `creditdatasets/`. Detailed descriptions of all datasets are are located at `data description/`.
+
+Hardware and expected runtime
+-
+* The type of computer used is a 13th Gen Intel(R) Core (TM) i7-13700H @ 2.40GHz and 16.0GB RAM.
+* The expected runtime is approximately 6 to 7 hours.
