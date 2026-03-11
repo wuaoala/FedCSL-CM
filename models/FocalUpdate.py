@@ -23,19 +23,14 @@ def compute_profit(y_true, y_pred, threshold,
     """
     y_hat = (y_pred >= threshold).type(torch.IntTensor)  # 1=不违约, 0=违约
     tn, fp, fn, tp = metrics.confusion_matrix(y_true, y_hat).ravel()
-
     C_FP = interest_income  # 错拒好客户的机会成本
     C_FN = loan_amount * LGD  # 放贷坏客户的违约损失
-
-
     # 成本
     total_cost = fp * C_FP + fn * C_FN
-
     profit_TN = interest_income
     profit_FP = -interest_income
     profit_FN = -loan_amount * LGD
     profit_TP = 0
-
 
     total_profit = (tn * profit_TN +
                     fp * profit_FP +
@@ -104,7 +99,8 @@ class LocalUpdate(object):
         self.args = args
         self.loss_func = F.cross_entropy
         self.selected_clients = []
-        self.ldr_train = DataLoader(DatasetSplit(dataset, self.train_idxs), batch_size=self.args.local_bs, shuffle=True)
+
+        self.ldr_train = DataLoader(DatasetSplit(dataset, self.train_idxs), batch_size=self.args.local_bs,shuffle=True)
         self.ldr_test = DataLoader(DatasetSplit(dataset, self.test_idxs), batch_size=self.args.bs, shuffle=True)
 
     def fedcsl_cm_train(self, local_net, kd_net):
@@ -200,6 +196,99 @@ class LocalUpdate(object):
         val_KS = np.mean(KS)
         return copy.deepcopy(net), sum(epoch_loss) / len(epoch_loss), \
             val_AUC_ROC, val_AUC_PR, 1 - val_BS_Plus, val_KS
+
+    def kd_train(self, local_net, kd_net):
+        local_net.train()
+        # train and update
+        optimizer = torch.optim.SGD(local_net.parameters(), lr=self.args.lr, )
+        epoch_loss = []
+        for iter in range(self.args.local_ep):
+            batch_loss = []
+            for batch_idx, (images, labels) in enumerate(self.ldr_train):
+                images, labels = images.to(self.args.device), labels.to(self.args.device)
+                optimizer.zero_grad()
+                local_probs = local_net(images)
+                kd_probs = kd_net(images).detach()
+                loss = kdistillation(local_probs, labels, kd_probs, temp=1, alpha=0.1)
+                loss.backward()
+                optimizer.step()
+                batch_loss.append(loss.item())
+            epoch_loss.append(sum(batch_loss) / len(batch_loss))
+        return copy.deepcopy(local_net), sum(epoch_loss) / len(epoch_loss)
+
+    def SCAFFOLD_train(self, net, c_global, c_local):
+        net.train()
+        net_g = copy.deepcopy(net)
+        # train and update
+        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, )
+        epoch_loss = []
+        y_delta = []
+        c_plus = []
+        c_diff = []
+        for iter in range(self.args.local_ep):
+            batch_loss = []
+            for batch_idx, (images, labels) in enumerate(self.ldr_train):
+                images, labels = images.to(self.args.device), labels.to(self.args.device)
+                optimizer.zero_grad()
+                log_probs = net(images)
+                loss = self.loss_func(log_probs, labels)
+                loss.backward()
+                for c_l, c_g in zip(c_local, c_global):
+                    c_diff.append(c_g - c_l)
+                for param, c_d in zip(net.parameters(), c_diff):
+                    param.grad += c_d.data
+                optimizer.step()
+                batch_loss.append(loss.item())
+            epoch_loss.append(sum(batch_loss) / len(batch_loss))
+        # compute y_delta (difference of model before and after training)
+        for param_l, param_g in zip(net.parameters(), net_g.parameters()):
+            y_delta.append(param_l - param_g)
+        # compute c_plus
+        coef = 1 / (self.args.num_users * 5)
+        for c_l, c_g, diff in zip(c_local, c_global, y_delta):
+            c_plus.append(c_l - c_g + (coef * diff))
+        return c_plus, copy.deepcopy(net), sum(epoch_loss) / len(epoch_loss)
+
+    def fedprox_train(self, net, glob_net):
+        net.train()
+        # train and update
+        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, )
+        epoch_loss = []
+        for iter in range(self.args.local_ep):
+            batch_loss = []
+            trained_samples = 0
+            for batch_idx, (images, labels) in enumerate(self.ldr_train):
+                images, labels = images.to(self.args.device), labels.to(self.args.device)
+                optimizer.zero_grad()
+                proximal_term = 0.0
+                for w, w_t in zip(net.parameters(), glob_net.parameters()):
+                    proximal_term += (w - w_t).norm(2)
+                log_probs = net(images)
+                loss = self.loss_func(log_probs, labels) + (0.001 / 2) * proximal_term
+                loss.backward()
+                optimizer.step()
+                batch_loss.append(loss.item())
+            epoch_loss.append(sum(batch_loss) / len(batch_loss))
+        return copy.deepcopy(net), sum(epoch_loss) / len(epoch_loss)
+
+    def fedavg_train(self, net):
+        net.train()
+        # train and update
+        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, )
+        epoch_loss = []
+        for iter in range(self.args.local_ep):
+            batch_loss = []
+            for batch_idx, (images, labels) in enumerate(self.ldr_train):
+                images, labels = images.to(self.args.device), labels.to(self.args.device)
+                optimizer.zero_grad()
+                log_probs = net(images)
+                loss = self.loss_func(log_probs, labels)
+                loss.backward()
+                optimizer.step()
+                batch_loss.append(loss.item())
+            epoch_loss.append(sum(batch_loss) / len(batch_loss))
+
+        return copy.deepcopy(net), sum(epoch_loss) / len(epoch_loss)
 
     def test(self, net):
         net.eval()
