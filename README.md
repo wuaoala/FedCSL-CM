@@ -17,7 +17,15 @@ Instructions & computational requirements
 -
 Running the `FedCSL-CM.py/` file will produce the results of the FedCSL-CM method.\<bar>
 
-Running the `Table_04 and Figure_02.py/` and `Table_06 and Figure_03.py/` files  ill produce the corresponding significance test analysis tables and figures.
+Running the `local_learning_methods.py/` file will produce the results of LR, SVM, XGB, LightGBM, and MLP in Table 3.
+
+Running the `FedAvg.py/`, `fedProx.py/`,`SCAFFOLD.py/`, `FedNova.py/` and `FedKD.py/` files will produce the results of FedAvg, FedProx, SCAFFOLD, FedNova, and FedKD in Table 5.
+
+Running the `FedAvg-RUS.py/`,`FedAvg-ROS.py/` and `FedAvg-SMOTE.py/` files will produce the results of FedAvg-RUS, FedAvg-ROS, and FedAvg-SMOTE in Table 7.
+
+Running the `Table_04 and Figure_02.py/` and `Table_06 and Figure_03.py/` files will produce the corresponding significance test analysis tables and figures.
+
+Running the `Figure_04.py/` file will produce the result of Figure 4.
 
 The programming language is Python (version 3.8). The versions of the other packages and libraries used can be found in the `requirements.txt/` file.
 
