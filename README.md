@@ -10,7 +10,8 @@ The code in this replication material generates the results of FedCSL-CM for the
 * `data description/`：folder of detailed dataset descriptions
 * `models/`: folder of key modules in FedCM-CSL
 * `utils/`: folder for data segmentation
-* `model_param/`: folder of saved model parameters
+* `model_param/`: folder of saved model parameters of FedCM-CSL
+* `fedkd_model_param/`: folder of saved model parameters of FedKD
 * `save/`: folder saved significance test analysis figures
   
 Instructions & computational requirements
