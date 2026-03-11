@@ -38,7 +38,7 @@ if __name__ == '__main__':
     args.epochs = 50
     args.local_ep = 5
     args.model = 'MLP'
-    args.dataset = 'Loan Data'
+    args.dataset = 'A'
     args.seed = 11
     torch.manual_seed(11)
 
@@ -202,18 +202,16 @@ if __name__ == '__main__':
         glob_KS_avg = sum(KS_glob_val) / len(KS_glob_val)
         glob_profit = sum(profit_globa) / len(profit_globa)
         glob_cost = sum(cost_globa) / len(cost_globa)
-        print('\nGlobal Round {:3d}, test AUC-ROC: {:.4f} test AUC-PR: {:.4f} test KS: {:.4f} test BS+: {:.4f} '
-              .format(iter+1, glob_AUC_ROC_avg,  glob_AUC_PR_avg, glob_KS_avg, glob_BS_plus_avg))
-        if args.dataset == 'LC':
-            print('profit：', glob_profit)
-            print('cost:', glob_cost)
         fedavg_train_loss.append(glob_loss_avg)
         fedavg_test_AUC_ROC.append(glob_AUC_ROC_avg)
         fedavg_test_AUC_PR.append(glob_AUC_PR_avg)
         fedavg_test_KS.append(glob_KS_avg)
         fedavg_test_BS_plus.append(glob_BS_plus_avg)
-
-
+    print('test AUC-ROC: {:.4f} test AUC-PR: {:.4f} test KS: {:.4f} test BS+: {:.4f} '
+          .format( glob_AUC_ROC_avg, glob_AUC_PR_avg, glob_KS_avg, glob_BS_plus_avg))
+    if args.dataset == 'LC':
+        print('profit：', glob_profit)
+        print('cost:', glob_cost)
     avg_epoch_time = sum(avg_epoch_time) / len(avg_epoch_time)
     fedavg_train_loss = [round(i, 4) for i in fedavg_train_loss]
     fedavg_test_AUC_ROC = [round(i, 4) for i in fedavg_test_AUC_ROC]
