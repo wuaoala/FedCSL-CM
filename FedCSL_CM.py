@@ -207,7 +207,6 @@ if __name__ == '__main__':
         fedavg_test_AUC_PR.append(glob_AUC_PR_avg)
         fedavg_test_KS.append(glob_KS_avg)
         fedavg_test_BS_plus.append(glob_BS_plus_avg)
-    print('最终测试结果，用于Table_3,Table_5和Table_7')
     print('The final test results correspond to those reported in Tables 3,5 and 7.')
     print('test AUC-ROC: {:.4f}\ntest AUC-PR: {:.4f}\ntest KS: {:.4f}\ntest BS+: {:.4f} '
           .format(glob_AUC_ROC_avg, glob_AUC_PR_avg, glob_KS_avg, glob_BS_plus_avg))
