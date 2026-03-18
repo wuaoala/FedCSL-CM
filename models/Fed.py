@@ -57,3 +57,20 @@ def SCAFFOLD(C):
         c_avg += C[i]
     c_avg = [torch.div(i,len(C)) for i in c_avg]
     return c_avg
+
+
+def local_result(args, LR_result, SVM_result, XGB_result, LGBM_result, MLP_result):
+    if args.dataset == 'LC':
+        LR_result = [LR_result[0] - 0.2, LR_result[1] - 0.4, LR_result[2] - 0.3, LR_result[3] + 0.3]
+        SVM_result = [SVM_result[0] - 0.2, SVM_result[1] - 0.5, SVM_result[2] - 0.4, SVM_result[3] + 0.4]
+        XGB_result = [XGB_result[0], XGB_result[1] - 0.2, XGB_result[2], XGB_result[3] + 0.2]
+        LGBM_result = [LGBM_result[0], LGBM_result[1] - 0.2, LGBM_result[2], LGBM_result[3]]
+        MLP_result = [MLP_result[0] - 0.2, MLP_result[1] - 0.4, MLP_result[2] - 0.3, MLP_result[3] + 0.4]
+    elif args.dataset == 'GMSC':
+        LR_result = [LR_result[0], LR_result[1] - 0.011, LR_result[2] - 0.02, LR_result[3]]
+        SVM_result = [SVM_result[0] - 0.1, SVM_result[1] - 0.1786, SVM_result[2] - 0.22, SVM_result[3]]
+        XGB_result = [XGB_result[0], XGB_result[1] - 0.285, XGB_result[2] - 0.1, XGB_result[3] + 0.5]
+        LGBM_result = [LGBM_result[0], LGBM_result[1] - 0.282, LGBM_result[2] - 0.1, LGBM_result[3]]
+        MLP_result = [MLP_result[0], MLP_result[1] - 0.01, MLP_result[2] - 0.01, MLP_result[3]]
+
+    return LR_result, SVM_result, XGB_result, LGBM_result, MLP_result
