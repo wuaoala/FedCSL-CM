@@ -151,7 +151,7 @@ if __name__ == '__main__':
         fedavg_test_f1_score.append(glob_AUC_PR_avg)
         fedavg_test_gmean.append(glob_KS_avg)
         fedavg_test_recall.append(glob_BS_plus_avg)
-    print('最终测试结果，用于Table_5')
+    print('The final test results correspond to those reported in Table 5.')
     print('test AUC-ROC: {:.4f}\ntest AUC-PR: {:.4f}\ntest KS: {:.4f}\ntest BS+: {:.4f} '
           .format(glob_AUC_ROC_avg, glob_AUC_PR_avg, glob_KS_avg, glob_BS_plus_avg))
     if args.dataset == 'LC':

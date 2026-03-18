@@ -285,8 +285,8 @@ if __name__ == '__main__':
     XGB_result = [round(i, 3) for i in XGB_result]
     LGBM_result = [round(i, 3) for i in LGBM_result]
     MLP_result = [round(i, 3) for i in MLP_result]
-    print('最终测试结果，用于Table_3')
-    print('局部性能能：','AUC-ROC','AUC-PR','KS','BS+')
+    print('The final test results correspond to those reported in Table 3.')
+    print('local performance：','AUC-ROC','AUC-PR','KS','BS+')
     print('LR: ', LR_result)
     print('SVM: ', SVM_result)
     print('XGB: ', XGB_result)
