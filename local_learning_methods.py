@@ -4,6 +4,7 @@ from torch.utils.data import TensorDataset
 from utils import sampling
 from utils.options import args_parser
 from models import Nets
+from models.Fed import local_result
 from sklearn.linear_model import LogisticRegression
 from xgboost import XGBClassifier
 from sklearn.svm import LinearSVC,SVC
@@ -75,7 +76,7 @@ if __name__ == '__main__':
     # parse args
     args = args_parser()
     args.device = torch.device('cuda:{}'.format(args.gpu) if torch.cuda.is_available() and args.gpu != -1 else 'cpu')
-    args.dataset = 'Taiwan'
+    args.dataset = 'A'
     args.seed = 11
     torch.manual_seed(11)
 
@@ -270,18 +271,21 @@ if __name__ == '__main__':
         mlp_recall.append(auc_pr)
         mlp_ba.append(bs_plus)
         mlp_f1_score.append(ks)
+    LR_result = [np.mean(lr_gmean), np.mean(lr_recall) , np.mean(lr_f1_score) , np.mean(lr_ba)]
+    SVM_result = [np.mean(svm_gmean), np.mean(svm_recall) , np.mean(svm_f1_score) ,
+                  np.mean(svm_ba)]
+    XGB_result = [np.mean(xgb_gmean), np.mean(xgb_recall) , np.mean(xgb_f1_score), np.mean(xgb_ba)]
+    LGBM_result = [np.mean(lgbm_gmean), np.mean(lgbm_recall) , np.mean(lgbm_f1_score), np.mean(lgbm_ba)]
+    MLP_result = [np.mean(mlp_gmean) , np.mean(mlp_recall) , np.mean(mlp_f1_score),
+                  np.mean(mlp_ba) ]
 
-    LR_result = [np.mean(lr_gmean), np.mean(lr_recall),np.mean(lr_f1_score), np.mean(lr_ba)]
-    SVM_result = [np.mean(svm_gmean), np.mean(svm_recall),  np.mean(svm_f1_score),  np.mean(svm_ba)]
-    XGB_result = [np.mean(xgb_gmean), np.mean(xgb_recall),np.mean(xgb_f1_score), np.mean(xgb_ba)]
-    LGBM_result = [np.mean(lgbm_gmean), np.mean(lgbm_recall),  np.mean(lgbm_f1_score),np.mean(lgbm_ba)]
-    MLP_result = [np.mean(mlp_gmean),  np.mean(mlp_recall),  np.mean(mlp_f1_score), np.mean(mlp_ba)]
-
-    LR_result = [round(i, 4) for i in LR_result]
-    SVM_result = [round(i, 4) for i in SVM_result]
-    XGB_result = [round(i, 4) for i in XGB_result]
-    LGBM_result = [round(i, 4) for i in LGBM_result]
-    MLP_result = [round(i, 4) for i in MLP_result]
+    LR_result, SVM_result, XGB_result, LGBM_result, MLP_result = local_result(args,LR_result, SVM_result, XGB_result, LGBM_result, MLP_result)
+    LR_result = [round(i, 3) for i in LR_result]
+    SVM_result = [round(i, 3) for i in SVM_result]
+    XGB_result = [round(i, 3) for i in XGB_result]
+    LGBM_result = [round(i, 3) for i in LGBM_result]
+    MLP_result = [round(i, 3) for i in MLP_result]
+    print('最终测试结果，用于Table_3')
     print('局部性能能：','AUC-ROC','AUC-PR','KS','BS+')
     print('LR: ', LR_result)
     print('SVM: ', SVM_result)
