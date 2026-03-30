@@ -32,16 +32,14 @@ def decrypt_vector(private_key, parameters):
     return parameters
 
 if __name__ == '__main__':
-
     # parse args
     args = args_parser()
     args.device = torch.device('cuda:{}'.format(args.gpu) if torch.cuda.is_available() and args.gpu != -1 else 'cpu')
     args.epochs = 50
     args.local_ep = 5
     args.model = 'MLP'
-    args.dataset = 'LC'
+    args.dataset = 'A'
     args.seed = 11
-
     torch.manual_seed(11)
 
     if args.dataset == 'Taiwan':
