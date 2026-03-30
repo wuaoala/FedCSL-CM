@@ -39,7 +39,7 @@ if __name__ == '__main__':
     args.epochs = 50
     args.local_ep = 5
     args.model = 'MLP'
-    args.dataset = 'Taiwan'
+    args.dataset = 'A'
     args.seed = 11
     torch.manual_seed(11)
 
