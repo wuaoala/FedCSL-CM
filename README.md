@@ -34,6 +34,8 @@ Running the `Table_04 and Figure_02.py/` and `Table_06 and Figure_03.py/` files 
 
 Running the `Figure_04.py/` file will produce the result of Figure 4.
 
+The results reported in Table 13 can be obtained by executing the aforementioned scripts.
+
 Please note that when running the above files, there is no need to modify any parameters. You only need to change the `args.dataset` parameter to the corresponding dataset name. No modifications are required for the `options.py/` file either.
 
 The programming language is Python (version 3.8). The versions of the other packages and libraries used can be found in the `requirements.txt/` file.
