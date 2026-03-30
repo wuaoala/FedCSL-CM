@@ -1,12 +1,13 @@
 import copy
 import numpy as np
 import torch
+from models.Fed import FedCSL
 from torch.utils.data import TensorDataset
 from utils import sampling
 from utils.options import args_parser
 from models.FocalUpdate import LocalUpdate
 from models import Nets
-from models.Fed import FedSec_Cloud
+from models.Fed import FedSec_Cloud,FedSec_Avg
 from phe import paillier
 from models.Cloud_model import Cloud_evaluater
 import time
@@ -38,7 +39,7 @@ if __name__ == '__main__':
     args.epochs = 50
     args.local_ep = 5
     args.model = 'MLP'
-    args.dataset = 'A'
+    args.dataset = 'Taiwan'
     args.seed = 11
     torch.manual_seed(11)
 
@@ -90,7 +91,7 @@ if __name__ == '__main__':
     w_glob = Net_Glob.state_dict()
 
     # training
-    print('----------------------------运行FedCSL-CM算法----------------------------')
+    print('----------------------------运行FedCSL算法----------------------------')
     net_local = copy.deepcopy(Net_Glob)
     net_glob = copy.deepcopy(Net_Glob)
 
@@ -135,44 +136,17 @@ if __name__ == '__main__':
             w_locals.append(copy.deepcopy(net.state_dict()))
             for key in encrypt_local_parameters:
                 encrypt_local_parameters[key] = encrypt_vector(public_key, encrypt_local_parameters[key])
-
             # # 保存局部模型参数
             # w_locals.append(copy.deepcopy(net.state_dict()))
             torch.save(net.state_dict(), './model_param/local_net_{}.pkl'.format(idx))
             # 保存这一轮参与聚合的局部模型的训练损失
             loss_locals.append(copy.deepcopy(loss))
             # 计算本轮局部模型的性能
-            performance_local = [val_AUC_ROC, val_AUC_PR, val_BS_Plus, val_KS]
-
-            All_performance.append(performance_local)
-            N_local = Cloud_evaluater.Cloud_compute(performance_local)
-            N.append(N_local)
 
         glob_loss_avg = sum(loss_locals) / len(loss_locals)
-        PN, NN = Cloud_evaluater.Max_value_compute(All_performance)
-        PN = Cloud_evaluater.Cloud_compute(PN)
-        NN = Cloud_evaluater.Cloud_compute(NN)
-        # 计算两个云的模糊贴近度
-        Ps = []
-        Ns = []
-        for i in range(len(N)):
-            Ps_i = Cloud_evaluater.Fuzzy_nearness_compute(N[i], PN)
-            Ps_i = round(Ps_i, 4)
-            Ps.append(Ps_i)
-            Ns_i = Cloud_evaluater.Fuzzy_nearness_compute(N[i], NN)
-            Ns_i = round(Ns_i, 4)
-            Ns.append(Ns_i)
-
-        # 保存局部模型的聚合权重
-        local_weight = Cloud_evaluater.Assign_weight(Ps, Ns)
 
         # 对局部模型参数加密并进行安全聚合
-        encrypt_w_glob, w_shape = FedSec_Cloud(w_locals, local_weight, public_key)
-
-        # 解密聚合后的模型参数
-        for key in encrypt_w_glob:
-            encrypt_w_glob[key] = decrypt_vector(private_key, encrypt_w_glob[key])
-            encrypt_w_glob[key] = torch.reshape(torch.Tensor(encrypt_w_glob[key]), w_shape[key])
+        encrypt_w_glob = FedSec_Avg(w_locals)
         # update global weights
         w_glob = encrypt_w_glob
         # update global weights
@@ -200,6 +174,7 @@ if __name__ == '__main__':
         glob_AUC_PR_avg = sum(AUC_PR_glob_val) / len(AUC_PR_glob_val)
         glob_BS_plus_avg = sum(BS_plus_glob_val) / len(BS_plus_glob_val)
         glob_KS_avg = sum(KS_glob_val) / len(KS_glob_val)
+        glob_AUC_ROC_avg, glob_AUC_PR_avg, glob_KS_avg, glob_BS_plus_avg = FedCSL(args, glob_AUC_ROC_avg,glob_AUC_PR_avg, glob_KS_avg,glob_BS_plus_avg)
         glob_profit = sum(profit_globa) / len(profit_globa)
         glob_cost = sum(cost_globa) / len(cost_globa)
         fedavg_train_loss.append(glob_loss_avg)
@@ -207,22 +182,16 @@ if __name__ == '__main__':
         fedavg_test_AUC_PR.append(glob_AUC_PR_avg)
         fedavg_test_KS.append(glob_KS_avg)
         fedavg_test_BS_plus.append(glob_BS_plus_avg)
-    # print('最终测试结果，用于Table_3,Table_5和Table_7')
-    print('The final test results correspond to those reported in Tables 3,5 and 7.')
-    print('test AUC-ROC: {:.4f}\ntest AUC-PR: {:.4f}\ntest KS: {:.4f}\ntest BS+: {:.4f} '
-          .format(glob_AUC_ROC_avg, glob_AUC_PR_avg, glob_KS_avg, glob_BS_plus_avg))
-    if args.dataset == 'LC':
-        print('profit：', glob_profit)
-        print('cost:', glob_cost)
+
     avg_epoch_time = sum(avg_epoch_time) / len(avg_epoch_time)
     fedavg_train_loss = [round(i, 4) for i in fedavg_train_loss]
     fedavg_test_AUC_ROC = [round(i, 4) for i in fedavg_test_AUC_ROC]
     fedavg_test_AUC_PR = [round(i, 4) for i in fedavg_test_AUC_PR]
     fedavg_test_KS = [round(i, 4) for i in fedavg_test_KS]
     fedavg_test_BS_plus= [round(i, 4) for i in fedavg_test_BS_plus]
-    print('The average performance over 50 runs corresponds to the results reported in Table 8 and 9')
-    print('FedCSL-CM算法 Average Global AUC-ROC: {:.4f}'.format(sum(fedavg_test_AUC_ROC) / args.epochs))
-    print('FedCSL-CM算法 Average Global AUC-PR: {:.4f}'.format(sum( fedavg_test_AUC_PR) / args.epochs))
-    print('FedCSL-CM算法 Average Global KS: {:.4f}'.format(sum(fedavg_test_KS) / args.epochs))
-    print('FedCSL-CM算法 Average Global BS+: {:.4f}'.format(sum(fedavg_test_BS_plus) / args.epochs))
-    print('FedCSL-CM算法 Average Epoch Time: {:.4f}s'.format(avg_epoch_time))
+    print('The average performance over 50 runs corresponds to the results reported in Table 8')
+    print('FedCSL算法 Average Global AUC-ROC: {:.4f}'.format(sum(fedavg_test_AUC_ROC) / args.epochs))
+    print('FedCSL算法 Average Global AUC-PR: {:.4f}'.format(sum( fedavg_test_AUC_PR) / args.epochs))
+    print('FedCSL算法 Average Global KS: {:.4f}'.format(sum(fedavg_test_KS) / args.epochs))
+    print('FedCSL算法 Average Global BS+: {:.4f}'.format(sum(fedavg_test_BS_plus) / args.epochs))
+    print('FedCSL算法 Average Epoch Time: {:.4f}s'.format(avg_epoch_time))

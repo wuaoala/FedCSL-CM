@@ -146,6 +146,14 @@ if __name__ == '__main__':
         print('profit：', glob_profit)
         print('cost:', glob_cost)
 
+    fedavg_test_AUC_ROC = [round(i, 4) for i in fedavg_test_ba]
+    print('The average performance over 50 runs corresponds to the results reported in Table 9')
+    print('FedNova算法 Average Global AUC-ROC: {:.4f}'.format(sum(fedavg_test_AUC_ROC) / args.epochs))
+    avg_epoch_time = sum(avg_epoch_time) / len(avg_epoch_time)
+    print('FedNova算法 Average Epoch Time: {:.4f}s'.format(avg_epoch_time))
+
+
+
 
 
 
