@@ -62,7 +62,7 @@ def kdistillation(y, labels, teacher_scores,
 
 class FocalLoss(torch.nn.Module):
 
-    def __init__(self, gamma=0, alpha=0.8, reduction='mean'):
+    def __init__(self, gamma, alpha, reduction='mean'):
         super(FocalLoss, self).__init__()
         self.gamma = gamma
         self.alpha = alpha
@@ -103,7 +103,7 @@ class LocalUpdate(object):
         self.ldr_train = DataLoader(DatasetSplit(dataset, self.train_idxs), batch_size=self.args.local_bs,shuffle=True)
         self.ldr_test = DataLoader(DatasetSplit(dataset, self.test_idxs), batch_size=self.args.bs, shuffle=True)
 
-    def fedcsl_cm_train(self, local_net, kd_net):
+    def fedcsl_cm_train(self, local_net, kd_net,gamma, alpha, lamda):
         local_net.train()
         # train and update
         optimizer = torch.optim.SGD(local_net.parameters(), lr=self.args.lr, momentum=self.args.momentum)
@@ -113,7 +113,7 @@ class LocalUpdate(object):
         BS_Plus = []
         KS = []
         temp = 1
-        kd_alpha = 0.1
+        lamda = 0.1
         for iter in range(self.args.local_ep):
             batch_loss = []
             for batch_idx, (images, target) in enumerate(self.ldr_train):
@@ -122,12 +122,12 @@ class LocalUpdate(object):
                     target[0]=1
                 optimizer.zero_grad()
                 log_probs = local_net(images)
-                focalloss = FocalLoss()
+                focalloss = FocalLoss(gamma=gamma, alpha=alpha)
                 teacher_probs = kd_net(images).detach()
                 loss_teacher = F.mse_loss(F.softmax(log_probs / temp, dim=1),
                                           F.softmax(teacher_probs / temp, dim=1))
                 loss_focal = focalloss(log_probs, target)
-                loss = kd_alpha * loss_teacher + (1 - kd_alpha) * loss_focal
+                loss = lamda * loss_teacher + (1 - lamda) * loss_focal
 
                 # 评估性能
                 y_prob = F.softmax(log_probs, dim=1)[:, 1].cpu()
@@ -161,49 +161,7 @@ class LocalUpdate(object):
         return copy.deepcopy(local_net), sum(epoch_loss) / len(epoch_loss), \
             val_AUC_ROC, val_AUC_PR, 1-val_BS_Plus , val_KS
 
-    def fedavg_cm_train(self, net):
-        net.train()
-        # train and update
-        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=self.args.momentum)
-        epoch_loss = []
-        AUC_PR = []
-        AUC_ROC = []
-        BS_Plus = []
-        KS = []
-        for iter in range(self.args.local_ep):
-            batch_loss = []
-            trained_samples = 0
-            for batch_idx, (images, target) in enumerate(self.ldr_train):
-
-                images, target = images.to(self.args.device), target.to(self.args.device)
-                optimizer.zero_grad()
-                log_probs = net(images)
-                loss = self.loss_func(log_probs, target)
-                # 评估性能
-                y_prob = F.softmax(log_probs, dim=1)[:, 1].cpu()
-                AUC_ROC.append(metrics.roc_auc_score(target.cpu().numpy(), y_prob.detach().numpy()))
-                precision, recall, _ = metrics.precision_recall_curve(target.cpu().detach().numpy(), y_prob.cpu().detach().numpy())
-                auc_pr = metrics.auc(recall, precision)
-                AUC_PR.append(auc_pr)
-                label_1 = torch.nonzero(target == 1).cpu()
-                bs_plus = metrics.brier_score_loss(target[label_1].cpu().detach().numpy(), y_prob[label_1].cpu().detach().numpy())
-                BS_Plus.append(bs_plus)
-                fpr, tpr, thresholds = metrics.roc_curve(target.cpu().detach().numpy(), y_prob.cpu().detach().numpy())
-                ks = max(abs(fpr - tpr))
-                KS.append(ks)
-                loss.backward()
-                optimizer.step()
-                batch_loss.append(loss.item())
-            epoch_loss.append(sum(batch_loss) / len(batch_loss))
-
-        val_AUC_ROC = np.mean(AUC_ROC)
-        val_AUC_PR = np.mean(AUC_PR)
-        val_BS_Plus = np.mean(BS_Plus)
-        val_KS = np.mean(KS)
-        return copy.deepcopy(net), sum(epoch_loss) / len(epoch_loss), \
-            val_AUC_ROC, val_AUC_PR, 1 - val_BS_Plus, val_KS
-
-    def focal_train(self, net):
+    def focal_train(self, net,gamma, alpha, lamda):
         net.train()
         # train and update
         optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=self.args.momentum)
@@ -220,7 +178,7 @@ class LocalUpdate(object):
                     target[0] = 1
                 optimizer.zero_grad()
                 log_probs = net(images)
-                focalloss = FocalLoss()
+                focalloss = FocalLoss(gamma=gamma, alpha=alpha)
                 loss = focalloss(log_probs, target)
                 # 评估性能
                 y_prob = F.softmax(log_probs, dim=1)[:, 1].cpu()
@@ -248,98 +206,6 @@ class LocalUpdate(object):
         return copy.deepcopy(net), sum(epoch_loss) / len(epoch_loss), \
             val_AUC_ROC, val_AUC_PR, 1 - val_BS_Plus, val_KS
 
-    def kd_train(self, local_net, kd_net):
-        local_net.train()
-        # train and update
-        optimizer = torch.optim.SGD(local_net.parameters(), lr=self.args.lr, )
-        epoch_loss = []
-        for iter in range(self.args.local_ep):
-            batch_loss = []
-            for batch_idx, (images, labels) in enumerate(self.ldr_train):
-                images, labels = images.to(self.args.device), labels.to(self.args.device)
-                optimizer.zero_grad()
-                local_probs = local_net(images)
-                kd_probs = kd_net(images).detach()
-                loss = kdistillation(local_probs, labels, kd_probs, temp=1, alpha=0.1)
-                loss.backward()
-                optimizer.step()
-                batch_loss.append(loss.item())
-            epoch_loss.append(sum(batch_loss) / len(batch_loss))
-        return copy.deepcopy(local_net), sum(epoch_loss) / len(epoch_loss)
-
-    def SCAFFOLD_train(self, net, c_global, c_local):
-        net.train()
-        net_g = copy.deepcopy(net)
-        # train and update
-        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, )
-        epoch_loss = []
-        y_delta = []
-        c_plus = []
-        c_diff = []
-        for iter in range(self.args.local_ep):
-            batch_loss = []
-            for batch_idx, (images, labels) in enumerate(self.ldr_train):
-                images, labels = images.to(self.args.device), labels.to(self.args.device)
-                optimizer.zero_grad()
-                log_probs = net(images)
-                loss = self.loss_func(log_probs, labels)
-                loss.backward()
-                for c_l, c_g in zip(c_local, c_global):
-                    c_diff.append(c_g - c_l)
-                for param, c_d in zip(net.parameters(), c_diff):
-                    param.grad += c_d.data
-                optimizer.step()
-                batch_loss.append(loss.item())
-            epoch_loss.append(sum(batch_loss) / len(batch_loss))
-        # compute y_delta (difference of model before and after training)
-        for param_l, param_g in zip(net.parameters(), net_g.parameters()):
-            y_delta.append(param_l - param_g)
-        # compute c_plus
-        coef = 1 / (self.args.num_users * 5)
-        for c_l, c_g, diff in zip(c_local, c_global, y_delta):
-            c_plus.append(c_l - c_g + (coef * diff))
-        return c_plus, copy.deepcopy(net), sum(epoch_loss) / len(epoch_loss)
-
-    def fedprox_train(self, net, glob_net):
-        net.train()
-        # train and update
-        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, )
-        epoch_loss = []
-        for iter in range(self.args.local_ep):
-            batch_loss = []
-            trained_samples = 0
-            for batch_idx, (images, labels) in enumerate(self.ldr_train):
-                images, labels = images.to(self.args.device), labels.to(self.args.device)
-                optimizer.zero_grad()
-                proximal_term = 0.0
-                for w, w_t in zip(net.parameters(), glob_net.parameters()):
-                    proximal_term += (w - w_t).norm(2)
-                log_probs = net(images)
-                loss = self.loss_func(log_probs, labels) + (0.001 / 2) * proximal_term
-                loss.backward()
-                optimizer.step()
-                batch_loss.append(loss.item())
-            epoch_loss.append(sum(batch_loss) / len(batch_loss))
-        return copy.deepcopy(net), sum(epoch_loss) / len(epoch_loss)
-
-    def fedavg_train(self, net):
-        net.train()
-        # train and update
-        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, )
-        epoch_loss = []
-        for iter in range(self.args.local_ep):
-            batch_loss = []
-            for batch_idx, (images, labels) in enumerate(self.ldr_train):
-                images, labels = images.to(self.args.device), labels.to(self.args.device)
-                optimizer.zero_grad()
-                log_probs = net(images)
-                loss = self.loss_func(log_probs, labels)
-                loss.backward()
-                optimizer.step()
-                batch_loss.append(loss.item())
-            epoch_loss.append(sum(batch_loss) / len(batch_loss))
-
-        return copy.deepcopy(net), sum(epoch_loss) / len(epoch_loss)
 
     def test(self, net):
         net.eval()
