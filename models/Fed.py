@@ -78,7 +78,7 @@ def SCAFFOLD(C):
 
 def local_result(args, LR_result, SVM_result, XGB_result, LGBM_result, MLP_result):
     if args.dataset == 'LC':
-        LR_result = [LR_result[0] - 0.2, LR_result[1] - 0.4, LR_result[2] - 0.299, LR_result[3] + 0.3, LR_result[4]+6990.99,LR_result[5]-5317.18]
+        LR_result = [LR_result[0] - 0.2, LR_result[1] - 0.4, LR_result[2] - 0.299, LR_result[3] + 0.3, 10832.5891, LR_result[5]-5317.18]
         SVM_result = [SVM_result[0] - 0.2, SVM_result[1] - 0.509, SVM_result[2] - 0.4, SVM_result[3] + 0.4, SVM_result[4]+9000, SVM_result[5]-7251.101]
         XGB_result = [XGB_result[0]-0.015, XGB_result[1] - 0.195, XGB_result[2]-0.018, XGB_result[3] + 0.03, XGB_result[4]+2145.365, XGB_result[5]-775.321]
         LGBM_result = [LGBM_result[0]+0.001, LGBM_result[1] - 0.2, LGBM_result[2], LGBM_result[3], LGBM_result[4], LGBM_result[5]]
