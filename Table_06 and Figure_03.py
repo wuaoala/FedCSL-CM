@@ -47,12 +47,13 @@ fc=f.isf(q=alpha, dfn=m, dfd=n)
 print('临界值：',fc)
 
 names = ['FedAvg','FedProx','SCAFFOLD','FedNova','FedKD','FedCSL-CM']
-LD_AUCROC = [ 0.5569,	0.5586,	0.5609,	0.5656,	0.5346,	0.6043]
-HMEQ_AUCROC = [0.7387,	0.7387,	0.7414,	0.7520,	0.7302,	0.7636]
-Taiwan_AUCROC = [0.7762,	0.7761,	0.7735,	0.7740,	0.7754,	0.7796]
-GMSC_AUCROC = [0.6343,	0.6342,	0.6343,	0.6219,	0.6334,	0.6401]
 A_AUCROC = [0.8764,	0.8764,	0.8785,	0.8785,	0.8753,	0.8807]
+LD_AUCROC = [ 0.5569,	0.5586,	0.5609,	0.5656,	0.550,	0.6043]
+HMEQ_AUCROC = [0.7387,	0.7387,	0.7414,	0.7520,	0.736,	0.7636]
+Taiwan_AUCROC = [0.7762,	0.7761,	0.7735,	0.7740,	0.7754,	0.7796]
 LC_AUCROC = [0.7903,	0.7891,	0.7922,	0.8086,	0.7783,	0.8489]
+GMSC_AUCROC = [0.6343,	0.6342,	0.6343,	0.6219,	0.6334,	0.6401]
+
 
 matrix_aucroc =np.array([LD_AUCROC,HMEQ_AUCROC,Taiwan_AUCROC,GMSC_AUCROC,A_AUCROC,LC_AUCROC])
 matrix_r1 = rank_matrix(matrix_aucroc)
@@ -73,13 +74,12 @@ if p > 0.05:
 	print('Probably the same distribution')
 else:
 	print('Probably different distributions')
-
-LD_AUCPR = [0.3385,	0.3391,	0.3382,	0.3581	,0.3400,	0.3755]
-HMEQ_AUCPR = [0.4394,	0.4392,	0.4414,	0.4515,	0.4321,	0.4658]
-Taiwan_AUCPR = [0.5577,	0.5576	,0.5575	,0.5616,	0.5547,	0.5677]
-GMSC_AUCPR = [0.1059,	0.1057,	0.1059,	0.1068,	0.1029,	0.1170]
 A_AUCPR = [0.8793,	0.8793,	0.8807,	0.8795,	0.8768,	0.8707]
+LD_AUCPR = [0.3385,	0.3391,	0.3382,	0.3581	,0.346,	0.3755]
+HMEQ_AUCPR = [0.4394,	0.4392,	0.4414,	0.4515,	0.435,	0.4658]
+Taiwan_AUCPR = [0.5577,	0.5576	,0.5575	,0.5616,	0.553,	0.5677]
 LC_AUCPR = [0.5285,	0.5261,	0.5333,	0.5904,	0.5022,	0.6647]
+GMSC_AUCPR = [0.1059,	0.1057,	0.1059,	0.1068,	0.105,	0.1170]
 
 matrix_aucpr =np.array([LD_AUCPR, HMEQ_AUCPR,Taiwan_AUCPR,GMSC_AUCPR,A_AUCPR ,LC_AUCPR ])
 matrix_r2 = rank_matrix(matrix_aucpr)
@@ -97,13 +97,14 @@ if p > 0.05:
 	print('Probably the same distribution')
 else:
 	print('Probably different distributions')
-
-LD_KS = [	0.2667,	0.2726,	0.2681,	0.2918,	0.2317,	0.3338]
-HMEQ_KS = [0.4558,	0.4570,	0.4557,	0.4594,	0.4414,	0.4915]
+A_KS = [0.7089,	0.7089,	0.7232,	0.7114,	0.7050,	0.7203]
+LD_KS = [0.2667,	0.267,	0.2681,	0.2918,	0.280,	0.3338]
+HMEQ_KS = [0.4558,	0.4570,	0.4557,	0.4594,	0.453,	0.4915]
 Taiwan_KS = [0.4458,	0.4455,	0.4433,	0.4485,	0.4449,	0.4521]
-GMSC_KS = [0.2289,	0.2287,	0.2291,	0.2114,	0.2279,	0.2337]
-A_KS = [0.2497,	0.7089,	0.7232,	0.7114,	0.7050,	0.7203]
 LC_KS = [0.4785,	0.4759,	0.4823,	0.4963,	0.4567,	0.5586]
+GMSC_KS = [0.2289,	0.2287,	0.2291,	0.2114,	0.229,	0.2337]
+
+
 
 matrix_KS = np.array([LD_KS,HMEQ_KS,Taiwan_KS,GMSC_KS,A_KS,LC_KS])
 matrix_r3 = rank_matrix(matrix_KS)
@@ -121,13 +122,12 @@ if p > 0.05:
 	print('Probably the same distribution')
 else:
 	print('Probably different distributions')
-
-LD_BS = [0.5312,	0.5307,	0.5428,	0.5351	,0.5221,	0.1747]
-HMEQ_BS = [	0.5870	,0.5876,	0.5880,	0.5183,	0.6073,	0.2418]
-Taiwan_BS = [0.4305	,0.4302	,0.4375,	0.4279	,0.4174,	0.2111]
-GMSC_BS = [0.8641,	0.8638,	0.8664,	0.8317,	0.8568,	0.5979]
-A_BS = [0.7089,	0.2498,	0.2505,	0.2142,	0.2525,	0.0423]
+A_BS = [0.2497 ,	0.2498,	0.2505,	0.2142,	0.2525,	0.0423]
+LD_BS = [0.5312,	0.5307,	0.5428,	0.5351	,0.531,	0.1747]
+HMEQ_BS = [	0.5870	,0.5876,	0.5880,	0.5183,	0.597,	0.2418]
+Taiwan_BS = [0.4305	,0.4302	,0.4375,	0.4279	,0.434,	0.2111]
 LC_BS = [0.6013,	0.6021,	0.5997,	0.4423,	0.6071,	0.1837]
+GMSC_BS = [0.8641,	0.8638,	0.8664,	0.8317,	0.863,	0.5979]
 
 matrix_BS = -np.array([LD_BS,HMEQ_BS,Taiwan_BS,GMSC_BS,A_BS,LC_BS])
 matrix_r4 = rank_matrix(matrix_BS)

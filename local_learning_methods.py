@@ -76,7 +76,7 @@ if __name__ == '__main__':
     # parse args
     args = args_parser()
     args.device = torch.device('cuda:{}'.format(args.gpu) if torch.cuda.is_available() and args.gpu != -1 else 'cpu')
-    args.dataset = 'A'
+    args.dataset = 'LC'
     args.seed = 11
     torch.manual_seed(11)
 
@@ -271,33 +271,39 @@ if __name__ == '__main__':
         mlp_recall.append(auc_pr)
         mlp_ba.append(bs_plus)
         mlp_f1_score.append(ks)
-    LR_result = [np.mean(lr_gmean), np.mean(lr_recall) , np.mean(lr_f1_score) , np.mean(lr_ba)]
-    SVM_result = [np.mean(svm_gmean), np.mean(svm_recall) , np.mean(svm_f1_score) ,
-                  np.mean(svm_ba)]
-    XGB_result = [np.mean(xgb_gmean), np.mean(xgb_recall) , np.mean(xgb_f1_score), np.mean(xgb_ba)]
-    LGBM_result = [np.mean(lgbm_gmean), np.mean(lgbm_recall) , np.mean(lgbm_f1_score), np.mean(lgbm_ba)]
-    MLP_result = [np.mean(mlp_gmean) , np.mean(mlp_recall) , np.mean(mlp_f1_score),
-                  np.mean(mlp_ba) ]
 
+    LR_result = [np.mean(lr_gmean), np.mean(lr_recall) , np.mean(lr_f1_score) , np.mean(lr_ba),np.mean(lr_cost),np.mean(lr_profit)]
+    SVM_result = [np.mean(svm_gmean), np.mean(svm_recall) , np.mean(svm_f1_score) ,np.mean(svm_ba),np.mean(svm_cost),np.mean(svm_profit)]
+    XGB_result = [np.mean(xgb_gmean), np.mean(xgb_recall) , np.mean(xgb_f1_score), np.mean(xgb_ba),np.mean(xgb_cost),np.mean(xgb_profit)]
+    LGBM_result = [np.mean(lgbm_gmean), np.mean(lgbm_recall) , np.mean(lgbm_f1_score), np.mean(lgbm_ba),np.mean(lgbm_cost),np.mean(lgbm_profit)]
+    MLP_result = [np.mean(mlp_gmean) , np.mean(mlp_recall) , np.mean(mlp_f1_score), np.mean(mlp_ba),np.mean(mlp_cost),np.mean(mlp_profit)]
     LR_result, SVM_result, XGB_result, LGBM_result, MLP_result = local_result(args,LR_result, SVM_result, XGB_result, LGBM_result, MLP_result)
-    LR_result = [round(i, 3) for i in LR_result]
-    SVM_result = [round(i, 3) for i in SVM_result]
-    XGB_result = [round(i, 3) for i in XGB_result]
-    LGBM_result = [round(i, 3) for i in LGBM_result]
-    MLP_result = [round(i, 3) for i in MLP_result]
+    LR_result = [round(i, 4) for i in LR_result]
+    SVM_result = [round(i, 4) for i in SVM_result]
+    XGB_result = [round(i, 4) for i in XGB_result]
+    LGBM_result = [round(i, 4) for i in LGBM_result]
+    MLP_result = [round(i, 4) for i in MLP_result]
     print('The final test results correspond to those reported in Table 3.')
     print('local performance：','AUC-ROC','AUC-PR','KS','BS+')
-    print('LR: ', LR_result)
-    print('SVM: ', SVM_result)
-    print('XGB: ', XGB_result)
-    print('LGBM: ', LGBM_result)
-    print('MLP: ', MLP_result)
-    LR_result.insert(0,'LR')
-    SVM_result.insert(0, 'SVM')
-    XGB_result.insert(0,'XGB')
-    LGBM_result.insert(0, 'LGBM')
-    MLP_result.insert(0, 'MLP')
-    results = LR_result+SVM_result+XGB_result+LGBM_result+MLP_result
-    list2txt(results,"./save/{} local learning results.txt".format(args.dataset))
+    print('LR: ', LR_result[:4])
+    print('SVM: ', SVM_result[:4])
+    print('XGB: ', XGB_result[:4])
+    print('LGBM: ', LGBM_result[:4])
+    print('MLP: ', MLP_result[:4])
+    if args.dataset == 'LC':
+        print('The local Economic performance results correspond to those reported in Table 13.')
+        print('Cost', 'Profit')
+        print('LR: ', LR_result[4:])
+        print('SVM: ', SVM_result[4:])
+        print('XGB: ', XGB_result[4:])
+        print('LGBM: ', LGBM_result[4:])
+        print('MLP: ', MLP_result[4:])
+    # LR_result.insert(0,'LR')
+    # SVM_result.insert(0, 'SVM')
+    # XGB_result.insert(0,'XGB')
+    # LGBM_result.insert(0, 'LGBM')
+    # MLP_result.insert(0, 'MLP')
+    # results = LR_result+SVM_result+XGB_result+LGBM_result+MLP_result
+    # list2txt(results,"./save/{} local learning results.txt".format(args.dataset))
 
 
