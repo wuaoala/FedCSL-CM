@@ -298,12 +298,6 @@ if __name__ == '__main__':
         print('XGB: ', XGB_result[4:])
         print('LGBM: ', LGBM_result[4:])
         print('MLP: ', MLP_result[4:])
-    # LR_result.insert(0,'LR')
-    # SVM_result.insert(0, 'SVM')
-    # XGB_result.insert(0,'XGB')
-    # LGBM_result.insert(0, 'LGBM')
-    # MLP_result.insert(0, 'MLP')
-    # results = LR_result+SVM_result+XGB_result+LGBM_result+MLP_result
-    # list2txt(results,"./save/{} local learning results.txt".format(args.dataset))
+
 
 
