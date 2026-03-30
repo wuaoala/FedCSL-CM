@@ -16,6 +16,9 @@ The code in this replication material generates the results of FedCSL-CM for the
   
 Instructions & computational requirements
 -
+
+Table 1 presents the dataset statistics and detailed descriptions of the client settings in the manuscript.
+
 Running the `FedCSL-CM.py/` file will produce the results of the FedCSL-CM method.\<bar>
 
 Running the `local_learning_methods.py/` file will produce the results of LR, SVM, XGB, LightGBM, and MLP in Table 3.
