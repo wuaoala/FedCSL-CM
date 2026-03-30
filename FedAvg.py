@@ -156,10 +156,10 @@ if __name__ == '__main__':
     print('FedAvg算法 Average Global BS+: {:.4f}'.format(sum(fedavg_test_BS_plus) / args.epochs))
     avg_epoch_time = sum(avg_epoch_time) / len(avg_epoch_time)
     print('FedAvg算法 Average Epoch Time: {:.4f}s'.format(avg_epoch_time))
-    fedavg_train_loss.insert(0, 'Train loss')
-    fedavg_test_AUC_ROC.insert(0, 'AUC-ROC')
-    fedavg_test_AUC_PR.insert(0, 'AUC-PR')
-    fedavg_test_KS.insert(0, 'KS')
-    fedavg_test_BS_plus.insert(0, 'BS+')
-    result = [fedavg_train_loss, fedavg_test_AUC_ROC, fedavg_test_AUC_PR, fedavg_test_KS, fedavg_test_BS_plus]
-    list2txt(result, "./save/{} FedAvg results.txt".format(args.dataset))
+    # fedavg_train_loss.insert(0, 'Train loss')
+    # fedavg_test_AUC_ROC.insert(0, 'AUC-ROC')
+    # fedavg_test_AUC_PR.insert(0, 'AUC-PR')
+    # fedavg_test_KS.insert(0, 'KS')
+    # fedavg_test_BS_plus.insert(0, 'BS+')
+    # result = [fedavg_train_loss, fedavg_test_AUC_ROC, fedavg_test_AUC_PR, fedavg_test_KS, fedavg_test_BS_plus]
+    # list2txt(result, "./save/{} FedAvg results.txt".format(args.dataset))
