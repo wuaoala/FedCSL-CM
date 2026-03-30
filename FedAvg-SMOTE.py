@@ -141,20 +141,4 @@ if __name__ == '__main__':
     if args.dataset == 'LC':
         print('profit：', glob_profit)
         print('cost:', glob_cost)
-    # fedavg_train_loss = [round(i, 4) for i in fedavg_train_loss]
-    # fedavg_test_AUC_ROC = [round(i, 4) for i in fedavg_test_ba]
-    # fedavg_test_AUC_PR = [round(i, 4) for i in fedavg_test_gmean]
-    # fedavg_test_KS = [round(i, 4) for i in fedavg_test_f1_score]
-    # fedavg_test_BS_plus = [round(i, 4) for i in fedavg_test_recall]
-    # print('FedAvg-SMOTE算法 Average Global AUC-ROC: {:.4f}'.format(sum(fedavg_test_AUC_ROC) / args.epochs))
-    # print('FedAvg-SMOTE算法 Average Global AUC-PR: {:.4f}'.format(sum(fedavg_test_AUC_PR) / args.epochs))
-    # print('FedAvg-SMOTE算法 Average Global KS: {:.4f}'.format(sum(fedavg_test_KS) / args.epochs))
-    # print('FedAvg-SMOTE算法 Average Global BS+: {:.4f}'.format(sum(fedavg_test_BS_plus) / args.epochs))
-    # fedavg_train_loss.insert(0, 'Train loss')
-    # fedavg_test_AUC_ROC.insert(0, 'AUC-ROC')
-    # fedavg_test_AUC_PR.insert(0, 'AUC-PR')
-    # fedavg_test_KS.insert(0, 'KS')
-    # fedavg_test_BS_plus.insert(0, 'BS+')
-    # result = [fedavg_train_loss, fedavg_test_AUC_ROC, fedavg_test_AUC_PR, fedavg_test_KS, fedavg_test_BS_plus]
-    # list2txt(result, "./save/{} FedAvg-SMOTE results.txt".format(args.dataset))
-
+   
