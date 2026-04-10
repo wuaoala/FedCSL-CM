@@ -113,7 +113,6 @@ class LocalUpdate(object):
         BS_Plus = []
         KS = []
         temp = 1
-        lamda = 0.1
         for iter in range(self.args.local_ep):
             batch_loss = []
             for batch_idx, (images, target) in enumerate(self.ldr_train):
