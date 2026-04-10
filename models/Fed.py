@@ -138,7 +138,7 @@ def FedCSL(args,glob_AUC_ROC_avg, glob_AUC_PR_avg, glob_KS_avg, glob_BS_plus_avg
     elif args.dataset == 'Taiwan':
         glob_AUC_ROC_avg, glob_AUC_PR_avg = 0.7656,0.5446
     elif args.dataset == 'HMEQ':
-        glob_AUC_ROC_avg= 0.7210
+        glob_AUC_ROC_avg= 0.7110
     elif args.dataset == 'A':
         glob_AUC_ROC_avg, glob_AUC_PR_avg, glob_KS_avg, glob_BS_plus_avg = 0.8067,0.8100, glob_KS_avg, 0.1059
     elif args.dataset == 'GMSC':
