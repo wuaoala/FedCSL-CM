@@ -1,7 +1,6 @@
 import copy
 import numpy as np
 import torch
-from models.Fed import ros_ec
 from torch.utils.data import TensorDataset
 from utils import sampling
 from utils.options import args_parser
