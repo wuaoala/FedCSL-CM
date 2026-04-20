@@ -1,7 +1,6 @@
 import copy
 import numpy as np
 import torch
-from models.Fed import FedCM
 from torch.utils.data import TensorDataset
 from utils import sampling
 from utils.options import args_parser
@@ -173,7 +172,6 @@ if __name__ == '__main__':
         glob_AUC_PR_avg = sum(AUC_PR_glob_val) / len(AUC_PR_glob_val)
         glob_BS_plus_avg = sum(BS_plus_glob_val) / len(BS_plus_glob_val)
         glob_KS_avg = sum(KS_glob_val) / len(KS_glob_val)
-        glob_AUC_ROC_avg, glob_AUC_PR_avg, glob_KS_avg, glob_BS_plus_avg = FedCM(args,glob_AUC_ROC_avg, glob_AUC_PR_avg, glob_KS_avg, glob_BS_plus_avg)
         glob_profit = sum(profit_globa) / len(profit_globa)
         glob_cost = sum(cost_globa) / len(cost_globa)
 
