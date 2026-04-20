@@ -1,7 +1,6 @@
 import copy
 import numpy as np
 import torch
-from models.Fed import smote_ec
 from torch.utils.data import TensorDataset
 from utils import sampling
 from utils.options import args_parser
@@ -129,7 +128,6 @@ if __name__ == '__main__':
         glob_KS_avg = sum(recall_glob_val) / len(recall_glob_val)
         glob_profit = sum(profit_globa) / len(profit_globa)
         glob_cost = sum(cost_globa) / len(cost_globa)
-        glob_profit, glob_cost = smote_ec(args, glob_profit, glob_cost)
         fedavg_train_loss.append(glob_loss_avg)
         fedavg_test_ba.append(glob_AUC_ROC_avg)
         fedavg_test_f1_score.append(glob_AUC_PR_avg)
