@@ -17,25 +17,15 @@ The code in this replication material generates the results of FedCSL-CM for the
 Instructions & computational requirements
 -
 
-Running the `FedCSL-CM.py/` file will produce the results of FedCSL-CM in Tables 3, 5, 7, 8 and 9.
+Running the `FedCSL-CM.py/` file will produce the results of FedCSL-CM.
 
-Running the `local_learning_methods.py/` file will produce the results of LR, SVM, XGB, LightGBM, and MLP in Table 3.
+Running the `FedAvg.py/`, `fedProx.py/`,`SCAFFOLD.py/`, `FedNova.py/` and `FedKD.py/` files will produce the results of FedAvg, FedProx, SCAFFOLD, FedNova, and FedKD.
 
-Running the `FedAvg.py/`, `fedProx.py/`,`SCAFFOLD.py/`, `FedNova.py/` and `FedKD.py/` files will produce the results of FedAvg, FedProx, SCAFFOLD, FedNova, and FedKD in Table 5.
+Running the `FedAvg-RUS.py/`,`FedAvg-ROS.py/` and `FedAvg-SMOTE.py/` files will produce the results of FedAvg-RUS, FedAvg-ROS, and FedAvg-SMOTE.
 
-Running the `FedAvg-RUS.py/`,`FedAvg-ROS.py/` and `FedAvg-SMOTE.py/` files will produce the results of FedAvg-RUS, FedAvg-ROS, and FedAvg-SMOTE in Table 7.
+Running the `FedCSL.py/` and `FedCM.py/` files will produce the results of FedCSL and FedCM.
 
-Running the `FedCSL.py/` and `FedCM.py/` files will produce the results of FedCSL and FedCM in Table 8.
-
-Modifying the training set ratio parameter in the  `FocalUpatede.py` file and run files `FedAvg.py/`, `fedProx.py/`,`SCAFFOLD.py/`, `FedNova.py/`, `FedKD.py/`, and `FedCSL-CM.py/` accordingly will produce the results shown in Table 9.
-
-Running the `FedCSL-CM_parameter_γ.py/`, `FedCSL-CM_parameter_α.py/`, and `FedCSL-CM_parameter_λ.py/` files will produce the results of FedCSL-CM in Table 10, 11 and 12.
-
-Running the `Table_04 and Figure_02.py/` and `Table_06 and Figure_03.py/` files will produce the corresponding significance test analysis tables and figures.
-
-Running the `Figure_04.py/` file will produce the result of Figure 4.
-
-The results reported in Table 13 can be obtained by executing the aforementioned scripts.
+Running the `FedCSL-CM_parameter_γ.py/`, `FedCSL-CM_parameter_α.py/`, and `FedCSL-CM_parameter_λ.py/` files will produce the results of FedCSL-CM.
 
 The programming language is Python (version 3.8). The versions of the other packages and libraries used can be found in the `requirements.txt/` file.
 
