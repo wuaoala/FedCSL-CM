@@ -4,7 +4,6 @@ from torch.utils.data import TensorDataset
 from utils import sampling
 from utils.options import args_parser
 from models import Nets
-from models.Fed import local_result
 from sklearn.linear_model import LogisticRegression
 from xgboost import XGBClassifier
 from sklearn.svm import LinearSVC,SVC
@@ -277,7 +276,6 @@ if __name__ == '__main__':
     XGB_result = [np.mean(xgb_gmean), np.mean(xgb_recall) , np.mean(xgb_f1_score), np.mean(xgb_ba),np.mean(xgb_cost),np.mean(xgb_profit)]
     LGBM_result = [np.mean(lgbm_gmean), np.mean(lgbm_recall) , np.mean(lgbm_f1_score), np.mean(lgbm_ba),np.mean(lgbm_cost),np.mean(lgbm_profit)]
     MLP_result = [np.mean(mlp_gmean) , np.mean(mlp_recall) , np.mean(mlp_f1_score), np.mean(mlp_ba),np.mean(mlp_cost),np.mean(mlp_profit)]
-    LR_result, SVM_result, XGB_result, LGBM_result, MLP_result = local_result(args,LR_result, SVM_result, XGB_result, LGBM_result, MLP_result)
     LR_result = [round(i, 4) for i in LR_result]
     SVM_result = [round(i, 4) for i in SVM_result]
     XGB_result = [round(i, 4) for i in XGB_result]
