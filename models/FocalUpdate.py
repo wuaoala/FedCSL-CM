@@ -118,8 +118,6 @@ class LocalUpdate(object):
             batch_loss = []
             for batch_idx, (images, target) in enumerate(self.ldr_train):
                 images, target = images.to(self.args.device), target.to(self.args.device)
-                if torch.count_nonzero(target) == 0:
-                    target[0]=1
                 optimizer.zero_grad()
                 log_probs = local_net(images)
                 focalloss = FocalLoss()
@@ -176,8 +174,6 @@ class LocalUpdate(object):
             for batch_idx, (images, target) in enumerate(self.ldr_train):
 
                 images, target = images.to(self.args.device), target.to(self.args.device)
-                if torch.count_nonzero(target) == 0:
-                    target[0]=1
                 optimizer.zero_grad()
                 log_probs = net(images)
                 loss = self.loss_func(log_probs, target)
@@ -218,8 +214,7 @@ class LocalUpdate(object):
             batch_loss = []
             for batch_idx, (images, target) in enumerate(self.ldr_train):
                 images, target = images.to(self.args.device), target.to(self.args.device)
-                if torch.count_nonzero(target) == 0:
-                    target[0] = 1
+       
                 optimizer.zero_grad()
                 log_probs = net(images)
                 focalloss = FocalLoss()
