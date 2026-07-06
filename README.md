@@ -22,8 +22,6 @@ Running the `FedAvg.py/`, `fedProx.py/`,`SCAFFOLD.py/`, `FedNova.py/` and `FedKD
 
 Running the `FedAvg-RUS.py/`,`FedAvg-ROS.py/` and `FedAvg-SMOTE.py/` files will produce the results of FedAvg-RUS, FedAvg-ROS, and FedAvg-SMOTE.
 
-Running the `FedCSL-CM_parameter_γ.py/`, `FedCSL-CM_parameter_α.py/`, and `FedCSL-CM_parameter_λ.py/` files will produce the results of FedCSL-CM.
-
 The programming language is Python (version 3.8). The versions of the other packages and libraries used can be found in the `requirements.txt/` file.
 
 Computing environment
@@ -37,4 +35,3 @@ The experimental datasets are located at `creditdatasets/`. Detailed description
 Hardware and expected runtime
 -
 * The type of computer used is a 13th Gen Intel(R) Core (TM) i7-13700H @ 2.40GHz and 16.0GB RAM.
-* The expected runtime is approximately 6 to 7 hours.
