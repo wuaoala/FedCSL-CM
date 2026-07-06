@@ -1,7 +1,6 @@
 Replication package for "FedCSL-CM"
 =
 * Assembly date: 2026/03/05
-* Author: Zhongyi Wang wzy172292979@163.com
 
 Overview & contents
 -
