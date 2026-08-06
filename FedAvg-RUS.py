@@ -28,7 +28,6 @@ if __name__ == '__main__':
     args.local_ep = 5
     args.model = 'MLP'
     args.dataset = 'A'
-    torch.manual_seed(args.seed)
 
     if args.dataset == 'Taiwan':  # 10
         args.num_users = 10
